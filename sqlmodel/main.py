@@ -24,7 +24,6 @@ from typing import (
 )
 
 from pydantic import BaseConfig, BaseModel
-from pydantic.errors import ConfigError, DictError
 from pydantic.fields import SHAPE_SINGLETON
 from pydantic.fields import FieldInfo as PydanticFieldInfo
 from pydantic.fields import ModelField, Undefined, UndefinedType
@@ -534,6 +533,7 @@ class SQLModel(BaseModel, metaclass=SQLModelMetaclass, registry=default_registry
     ) -> _TSQLModel:
         # Duplicated from Pydantic
         if not cls.__config__.orm_mode:
+            from pydantic.errors import ConfigError
             raise ConfigError(
                 "You must have the config attribute orm_mode=True to use from_orm"
             )
@@ -601,6 +601,7 @@ class SQLModel(BaseModel, metaclass=SQLModelMetaclass, registry=default_registry
             try:
                 value_as_dict = dict(value)
             except (TypeError, ValueError) as e:
+                from pydantic.errors import DictError
                 raise DictError() from e
             return cls(**value_as_dict)
 
